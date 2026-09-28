@@ -21,7 +21,7 @@ Default to a **read-only review** of the named path or subsystem. If no scope is
 - **proposal:** write a handoff only when requested, using the requested destination or existing repository convention. Preserve findings, evidence, uncertainties, priorities, safety constraints and completion criteria. This mode does not authorize implementation.
 - **implement:** change only the explicitly assigned behavior or structural slice. A broad review invocation is not permission for a package-wide refactor. If no slice is assigned, first deliver a bounded recommendation.
 
-Follow the repository's instructions, governing feature agreements and actual framework constraints. Distinguish approved behavior, implementation proposals and historical evidence. Inspect local changes before modifying files; preserve unrelated work.
+Follow the repository's instructions, documented requirements, design decisions and actual framework constraints. Distinguish current requirements, proposed changes and historical evidence. Inspect local changes before modifying files; preserve unrelated work.
 
 ## Vocabulary
 
@@ -60,9 +60,9 @@ A large cohesive implementation can be deep. A tiny adapter can be necessary. In
 
 ### 1. Map responsibilities and constraints
 
-Read the relevant design agreements and code map. Identify real entrypoints, business outcomes, state owners, integrations and recovery paths. Separate essential complexity from accidental structure.
+Read relevant design documentation where available and map the actual code. Identify real entrypoints, outcomes, state owners, integrations and recovery paths where applicable. Separate essential complexity from accidental structure.
 
-Essential complexity can include financial exactness, authorization, privacy, concurrency, retained evidence, durable execution, cancellation and uncertain external effects. Hiding it means owning it inside the right module, not deleting its safeguards.
+Essential complexity can include numerical precision, authorization, privacy, concurrency, data integrity, resource lifetimes, cancellation and uncertain external effects. Hiding it means owning it inside the right module, not deleting its safeguards.
 
 Complete when the scope, governing behavior and representative entrypoints are known. Do not scan unrelated subsystems just to enlarge the report.
 
@@ -84,13 +84,13 @@ Complete when every proposed finding has a concrete caller and implementation pa
 
 Look for evidence of:
 
-- **Information leakage:** callers share representation, positional encoding, source-selection or sequencing knowledge.
-- **Misplaced ownership:** shared authentication under a journal module, generic validation under one unrelated procedure, or common transport under one consumer.
-- **Inverted adapter dependencies:** reusable behavior imports its HTTP/Temporal/CLI adapter rather than both entrypoints using the underlying implementation.
-- **Change amplification:** producer and recovery decoder must change together for one policy or representation adjustment.
+- **Information leakage:** callers share representation, positional encoding, selection rules or sequencing knowledge.
+- **Misplaced ownership:** shared authentication under one feature, common validation under one unrelated operation, or reusable logic inside one entrypoint.
+- **Inverted adapter dependencies:** reusable behavior imports its network, background-job or command-line adapter rather than both entrypoints using the underlying implementation.
+- **Change amplification:** a writer and reader must change together for one policy or representation adjustment.
 - **Discoverability (unknown unknowns):** can a maintainer identify which modules a change affects, or are important dependencies and side effects hidden? Hide implementation details—not consequences callers need to understand.
 - **Pass-through interfaces:** extra configuration or wrappers add concepts without hiding meaningful behavior.
-- **Fragmented cohesion:** one business procedure is scattered across technical file categories with no clear owner.
+- **Fragmented cohesion:** one capability is scattered across technical file categories with no clear owner.
 - **Integration gaps:** a deep implementation exists but the actual caller omits required context or never reaches it.
 
 Challenge each suspicion before reporting it:
@@ -112,12 +112,12 @@ For each recommendation specify:
 1. Caller knowledge before and after.
 2. The single owner of the hidden policy or representation.
 3. Actual affected callers and the change in dependency direction.
-4. Preserved invariants and saved-data/wire/replay compatibility risks.
+4. Preserved invariants and compatibility risks for existing callers, saved data, protocols or execution histories, where applicable.
 5. The smallest check that would detect a broken contract.
 
-Prefer boring changes. Avoid generic workflow frameworks, speculative repositories, universal facade modules and folder-only rearrangements. Preserve distinct role contracts and explicit runtime validation. Shared transport does not imply shared business rejection policy.
+Prefer boring changes. Avoid generic orchestration frameworks, speculative repositories, universal facade modules and folder-only rearrangements. Preserve meaningful type distinctions and explicit runtime validation. Sharing a mechanism does not mean its callers share the same policy.
 
-When a behavioral gap needs unspecified product policy, name the missing decision rather than inventing it. Continue independent structural work only if it is within the assigned scope.
+When a behavioral gap depends on an unspecified requirement, name the missing decision rather than inventing it. Continue independent structural work only if it is within the assigned scope.
 
 Complete when each recommendation explains a concrete reduction in caller burden and a safe, bounded way to prove it.
 
@@ -133,20 +133,20 @@ Lead with an honest verdict. Use this structure, sized to the scope:
 
 Label source-derived behavioral uncertainty **[INFERENCE]**. Do not invent numeric quality scores, runtime results or production-readiness claims. Prefer code references and a small before/after dependency sketch over generic architecture advice. Recommend no change when the evidence supports it.
 
-For a requested proposal, also include baseline/dirty-tree caveats, reading route, authority distinctions, goals, non-goals, compatibility requirements, per-slice completion criteria and a copyable next-agent assignment. Link existing policy rather than cloning an entire repository instruction set. A handoff records an executable next step, not implicit approval of every suggested change.
+For a requested proposal, also include the reviewed revision and local-change caveats, relevant references, requirements versus proposals, goals, non-goals, compatibility requirements, per-slice completion criteria and a copyable next-agent assignment. Link existing policy rather than cloning an entire repository instruction set. A handoff records an executable next step, not implicit approval of every suggested change.
 
 ## Implementation and verification
 
-When implementation is explicitly assigned, trace all affected callers before editing; use symbol-aware refactoring where available. Migrate internal callers cleanly and remove obsolete glue. Preserve saved data, external contracts and durable execution histories with an explicit compatibility decision rather than treating them as internal imports.
+When implementation is explicitly assigned, trace all affected callers before editing; use symbol-aware refactoring where available. Migrate internal callers cleanly and remove obsolete glue. Where applicable, preserve saved data, external contracts and durable execution histories with an explicit compatibility decision rather than treating them as internal imports.
 
-Prove behavior through the caller's interface, including the affected failure/recovery path. Keep focused regression tests for plausible bugs; do not add tests that assert source layout, method forwarding or mock echoes. Run repository-required checks and report exact commands/results. For a read-only assessment, source evidence is sufficient for structural claims; use a bounded scenario before claiming a runtime defect. Never execute live financial or destructive effects to prove a structural point.
+Prove behavior through the caller's interface, including affected error and recovery paths where applicable. Keep focused regression tests for plausible bugs; do not add tests that assert source layout, method forwarding or mock echoes. Run repository-required checks and report exact commands/results. For a read-only assessment, source evidence is sufficient for structural claims; use a bounded scenario before claiming a runtime defect. Use isolated resources for checks; a structural review does not authorize production mutations or destructive actions.
 
 ## Calibration examples
 
-- `parse_bank_file(bytes)` hides three bank formats and returns a validated result: preserve it even if its implementation is large.
-- A three-line Temporal activity supplies a durable checkpoint and DB cleanup: thin but justified; do not merge it away solely for file count.
-- Recovery decodes `[bank_parse, *open_ar, bank_accounts, ...]` independently of its producer: centralize the persisted role interpretation, including recovery before later artifacts exist.
-- A synchronous submission module imports `_post` from its activity adapter: move shared behavior below both callers; retain durable claim and no-blind-resend rules.
+- `load_document(path)` handles format detection, decoding and validation behind one interface: preserve it even if its implementation is large.
+- A short HTTP handler enforces authentication and translates errors: thinness alone does not justify removing it.
+- A writer and reader independently interpret `[version, flags, payload, ...]`: give that format one owner and preserve compatibility with existing data.
+- A CLI imports shared application logic from an HTTP handler: move the shared behavior below both entrypoints while preserving their distinct responsibilities.
 - Many files but no demonstrated caller burden: do not propose a package-wide move. Find the actual knowledge leak first.
 
 ## Inspiration

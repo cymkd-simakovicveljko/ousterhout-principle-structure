@@ -3,6 +3,8 @@
 An agent skill for evidence-backed architectural reviews. Find the complexity callers are forced to manage, put knowledge under the right owner, and recommend the smallest useful change.
 
 **Make callers know less—not every file smaller.**
+Language- and framework-independent. Apply it to a library, application or subsystem; the review follows that project's requirements and conventions.
+
 
 Inspired by John Ousterhout's *A Philosophy of Software Design*. Independent project; not affiliated with or endorsed by John Ousterhout.
 
@@ -22,7 +24,7 @@ The skill is a self-contained [SKILL.md](SKILL.md): no scripts, packages, extern
 ## Use
 
 ```text
-/ousterhout-principle-structure src/payments review
+/ousterhout-principle-structure src/documents review
 ```
 
 | Mode | Behavior |
@@ -34,8 +36,8 @@ The skill is a self-contained [SKILL.md](SKILL.md): no scripts, packages, extern
 Examples:
 
 ```text
-/ousterhout-principle-structure src/payments proposal — write docs/payment-structure-proposal.md
-/ousterhout-principle-structure src/payments implement — move shared submission logic below the CLI and worker adapters; preserve claim-before-send and uncertain-outcome handling
+/ousterhout-principle-structure src/documents proposal — write docs/document-structure-proposal.md
+/ousterhout-principle-structure src/documents implement — move shared document-loading logic below the CLI and HTTP adapters; preserve validation and error behavior
 ```
 
 The skill is manually invoked in hosts honoring `disable-model-invocation: true`.
@@ -55,19 +57,19 @@ A large parser can be deep. A tiny adapter can be necessary. File size, file cou
 
 Illustrative example, not a review of a real repository:
 
-> **Verdict:** parsing is deep; submission logic has the wrong owner.
+> **Verdict:** document loading is deep; shared application logic has the wrong owner.
 >
-> **Keep:** `parse_document(bytes)` hides three formats behind one validated result. Its implementation size is not a reason to split it. Keep the worker adapter that supplies a durable checkpoint.
+> **Keep:** `load_document(path)` hides format detection, decoding and validation behind one result. Its implementation size is not a reason to split it. Keep the HTTP handler that enforces authentication and translates errors.
 >
-> **Change:** the synchronous submission module imports `_post` from its worker adapter. Both entrypoints need that behavior, so put it below both callers. Preserve claim-before-send and no-blind-resend rules.
+> **Change:** the CLI imports document-loading logic from the HTTP handler. Both entrypoints need that behavior, so put it below both callers. Keep HTTP authentication and response translation in the handler.
 >
-> **Order:** fix ownership first. No generic submission framework or package-wide move.
+> **Order:** fix ownership first. No generic document framework or package-wide move.
 >
-> **Evidence:** supplied example only. Before changing real code, trace both callers and check that ambiguous submission outcomes cannot cause a second send.
+> **Evidence:** supplied example only. Before changing real code, trace both callers and verify that valid and malformed documents retain their expected behavior and HTTP access checks remain enforced.
 
 ```text
-Before: synchronous caller → worker adapter's implementation
-After:  synchronous caller → shared implementation ← worker adapter
+Before: CLI → HTTP handler's document-loading implementation
+After:  CLI → shared document-loading implementation ← HTTP handler
 ```
 
 ## When not to use it
@@ -76,7 +78,7 @@ After:  synchronous caller → shared implementation ← worker adapter
 - A tiny local fix with no interface or ownership consequence.
 - Premature abstraction or unstable requirements: establish the need before deepening the abstraction.
 
-This is a structural design review, not a substitute for correctness, security or performance verification. It follows the target repository's rules and does not authorize live financial or destructive effects.
+This is a structural design review, not a substitute for correctness, security or performance verification. It follows the target repository's rules and does not authorize production mutations or destructive actions.
 
 ## Inspiration and license
 
